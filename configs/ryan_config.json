@@ -1,0 +1,10 @@
+{
+  "model_file": "exp/tts_train_conformer_fastspeech2_raw_phn_tacotron_g2p_en_no_space/1000epoch.pth",
+  "model_tag": "",
+  "vocoder_file": "/home/rohola/codes/ryan-tts/models/vocoders/train_nodev_ryanspeech_parallel_wavegan.v1/checkpoint-400000steps.pkl",
+  "vocoder_tag": "",
+  "voice_dir": "wav_files",
+  "fs": 22050,
+  "port": 6666,
+  "device": "cpu"
+}

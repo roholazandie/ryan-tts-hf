@@ -1,0 +1,10 @@
+{
+  "model_file": "",
+  "model_tag": "kan-bayashi/ljspeech_vits",
+  "vocoder_file": "",
+  "vocoder_tag": "parallel_wavegan/ljspeech_style_melgan.v1",
+  "voice_dir": "wav_files",
+  "fs": 22050,
+  "port": 6666,
+  "device": "cpu"
+}

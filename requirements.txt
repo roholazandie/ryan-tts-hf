@@ -1,0 +1,3 @@
+espnet==0.10.6
+parallel_wavegan==0.5.4
+espnet_model_zoo
