@@ -24,7 +24,7 @@ Note: if you want to move the model files to a different location, you should ch
 
 ## Usage
 Models and Vocoders can be trained and used in config as ```model_file``` and ```vocoder_file``` respectively. But if you don't have
-any models or vocoders, you can use the list of models and vocoders as in the following list.
+any models or vocoders, you can use the list of models for ```model_tag``` as in the following list.
 
 ```
 Models:
@@ -36,7 +36,7 @@ Models:
 - kan-bayashi/ljspeech_joint_train_conformer_fastspeech2_hifigan
 - kan-bayashi/ljspeech_vits"
 ```
-and the list of vocoders as in the following list.
+and the list of vocoders for ```vocoder_tag``` in the following list.
 ```
 - none
 - parallel_wavegan/ljspeech_parallel_wavegan.v1
@@ -45,6 +45,8 @@ and the list of vocoders as in the following list.
 - parallel_wavegan/ljspeech_hifigan.v1
 - parallel_wavegan/ljspeech_style_melgan.v1
 ```
+Note that when you use ```model_tag``` the value for ```model_file``` should be empty. The same applies to ```vocoder_tag```.
+But ```model_file``` can be used with ```vocoder_tag``` or you can just leave vocoder specification empty.
 If you use ```none``` the algorithm will be the ```griffin-lim``` vocoder.
 
 ### TODO:
