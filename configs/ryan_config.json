@@ -4,6 +4,7 @@
   "vocoder_file": "/home/rohola/codes/ryan-tts/models/vocoders/train_nodev_ryanspeech_parallel_wavegan.v1/checkpoint-400000steps.pkl",
   "vocoder_tag": "",
   "voice_dir": "wav_files",
+  "abbreviations_file": "abbreviations.json",
   "fs": 22050,
   "port": 6666,
   "device": "cpu"
