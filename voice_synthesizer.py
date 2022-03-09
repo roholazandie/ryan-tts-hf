@@ -124,21 +124,6 @@ class VoiceSynthesizer:
 
         self.add_abreviations_to_phonemes()
 
-        # custom_dict = {
-        #     "co": [['K', 'AA2', 'L', 'ER0', 'AA1', 'D', 'OW0']],
-        #     "fugafuga": [['AAAAAAAAAAAAAAAAAA']]
-        # }
-
-        # # initialize g2p instance
-        # self.text2speech.preprocess_fn.tokenizer.g2p("initialize")
-        # # update dict
-        # for word in custom_dict:
-        #     if word in self.text2speech.preprocess_fn.tokenizer.g2p.g2p.cmu:
-        #         self.text2speech.preprocess_fn.tokenizer.g2p.g2p.cmu[word].insert(0, custom_dict[word])
-        #     else:
-        #         self.text2speech.preprocess_fn.tokenizer.g2p.g2p.cmu[word] = custom_dict[word]
-        # self.text2speech.preprocess_fn.tokenizer.g2p.g2p.cmu.update(custom_dict)
-
     def add_abreviations_to_phonemes(self):
         abbreviations_dict = json.loads(open(self.config.abbreviations_file).read())
         try:
@@ -185,64 +170,6 @@ class VoiceSynthesizer:
         end = int(float(end) / 10) + 10
         return phoneme, start, end
 
-    def tts(self, input_text):
-        # synthesis
-        with torch.no_grad():
-            start = time.time()
-            output = self.text2speech(input_text)
-
-        # extract phonemes
-        phonemes = self.extract_phonemes(input_text)
-
-        wav = output['wav']
-        # print("Created phonemes successfully")
-        y = wav.view(-1).cpu().tolist()
-        durations = output['duration'].cpu().tolist()
-        durations = durations[1:]
-        # print("Created durations")
-        rtf = (time.time() - start) / (len(wav) / self.config.fs)
-        print(f"RTF = {rtf:5f}")
-
-        audio_duration = (len(y) / self.config.fs) * 1000
-
-        unit_duration = audio_duration / sum(durations)
-
-        ends = np.cumsum(durations) * unit_duration
-        starts = [0] + ends[:-1].tolist()
-
-        lines = []
-        for phoneme, start, end in zip(phonemes, starts, ends):
-            phoneme, start, end = self.regulate_phoneme_duration(phoneme, start, end)
-            line = "{:4d} 0    0    0    0  {:4d} {:4s} 0.0000 ".format(start, end, phoneme) + '\n'
-            # file_writer.write(line)
-            lines.append(line)
-            # phoneme_out["phonemes"].append(phoneme)
-            # phoneme_out["start"].append(start)
-            # phoneme_out["end"].append(end)
-
-        # let us listen to generated samples
-        # NOTE: Wav file data: wav.view(-1).cpu().numpy()
-        wav_file = os.path.join(self.config.voice_dir, "x.wav")
-
-        # wav_data = wav.view(-1).cpu().numpy()
-        # print("wav_data type: {}".format(type(wav_data[0])))
-        # print("wav_data type: {}".format(type(wav_data[0])))
-
-        write(wav_file, self.text2speech.fs, wav.view(-1).cpu().numpy())
-        # print("writing to file complete")
-
-        # return {"phonemes": " ".join(lines)}
-        # print("returning phonemes")
-        print(f"wav type: {type(wav)}")
-        return {"phonemes": " ".join(lines), "wav": wav.view(-1).cpu().numpy()}
-
-    def parse_input_text(self, input_text):
-        # there should be a better way to do this
-        soup = BeautifulSoup(input_text, "html.parser")
-        parsed_text = soup.prettify().split('\n')
-        parsed_text = list(filter(lambda item: not item.startswith('</') and item != '', parsed_text))
-        return parsed_text
-
     def get_text(self, input_text):
         soup = BeautifulSoup(input_text, "html.parser")
         return soup.get_text()
@@ -260,9 +187,7 @@ class VoiceSynthesizer:
     def _flatten(self, t):
         return [item for sublist in t for item in sublist]
 
-    def tts2(self, input_text):
-        #parsed_input_text = self.parse_input_text(input_text)
-
+    def tts(self, input_text):
         # extract acronyms and add it to the cmu dictionary
         soup = BeautifulSoup(input_text, "html.parser")
         for s in soup.select('say-as'):
@@ -292,33 +217,6 @@ class VoiceSynthesizer:
                 durations = output['duration'].cpu().tolist()[1:]
                 all_durations.append(durations)
                 outputs.append({"speech": output})
-
-
-
-        # for i in range(len(parsed_input_text)):
-        #     if parsed_input_text[i].startswith('<say-as interpret-as="acronym">'):
-        #         characters = list(filter(lambda item: item.strip(), parsed_input_text[i+1]))
-        #         acronym = ''.join(characters)
-        #         phonemes = self._flatten([character_to_phonemes[character.upper()] for character in characters])
-        #         self.add_acronyms_to_phonemes_dict(acronym, phonemes)
-
-        # synthesis
-        # with torch.no_grad():
-        #     outputs = []
-        #     all_y = []
-        #     all_durations = []
-        #     for i in range(len(parsed_input_text)):
-        #         if parsed_input_text[i].startswith('<break'):
-        #             break_time = BeautifulSoup(parsed_input_text[i], "html.parser").find("break").attrs['time']
-        #             break_time = self._convert_time_to_miliseconds(break_time)
-        #             outputs.append({"break": break_time})
-        #         else:
-        #             output = self.text2speech(parsed_input_text[i])
-        #             y = output['wav'].view(-1).cpu().tolist()
-        #             all_y.append(y)
-        #             durations = output['duration'].cpu().tolist()[1:]
-        #             all_durations.append(durations)
-        #             outputs.append({"speech": output})
 
         # extract phonemes
         phonemes = self.extract_phonemes(self.get_text(input_text))
@@ -360,16 +258,17 @@ class VoiceSynthesizer:
 
 
 if __name__ == '__main__':
-    # s = "This is the first sentence. <break time='2000ms'/> This is the second sentence. <break time='1s'/> This is the third sentence."
+    s = "This is the first sentence. <break time='2000ms'/> This is the second sentence. <break time='1s'/> This is the third sentence."
     #s = "The state of CO has a lot of ski resorts."
     #s = "These materials are NSFW."
     #s = "The format is JPEG."
     #s = "This is just a sentence. I don't know how to answer this question. <break time='1s'/> This is the second sentence. The state of CO has a lot of ski resorts."
     #s = "CBS Sports has the latest NFL Football news."
     #s = "۷Chapter VI of the book is about the history of the United States. <break time='5s'/> The book is about the history of the United States."
-    #s = "The city of hamedan is located in Iran."
+    s = "The city of hamedan is located in Iran."
     #s = "The NASDAK told me to go away."
-    s = "this is <say-as interpret-as='acronym'>AMD </say-as> stands for Advanced Micro Devices. Also <say-as interpret-as='acronym'>XMR</say-as> is irrelevant. <break time='1s'/> This is the second sentence."
+    #s = "this is <say-as interpret-as='acronym'>AMD </say-as> stands for Advanced Micro Devices. Also <say-as interpret-as='acronym'>XMR</say-as> is irrelevant. <break time='1s'/> This is the second sentence."
+    #s = "The program <say-as interpret-as='acronym'>XWD</say-as> captures the content of a screen or of a window."
     vs = VoiceSynthesizer(config_file="configs/ryan_config.json")
-    response = vs.tts2(s)
+    response = vs.tts(s)
     print(response)
