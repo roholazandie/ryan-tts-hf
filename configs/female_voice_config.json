@@ -4,6 +4,7 @@
   "vocoder_file": "",
   "vocoder_tag": "parallel_wavegan/ljspeech_style_melgan.v1",
   "voice_dir": "wav_files",
+  "abbreviations_file": "abbreviations.json",
   "fs": 22050,
   "port": 6666,
   "device": "cpu"

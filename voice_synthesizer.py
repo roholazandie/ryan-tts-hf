@@ -187,6 +187,7 @@ class VoiceSynthesizer:
     def _flatten(self, t):
         return [item for sublist in t for item in sublist]
 
+
     def tts(self, input_text):
         # extract acronyms and add it to the cmu dictionary
         soup = BeautifulSoup(input_text, "html.parser")
@@ -258,17 +259,19 @@ class VoiceSynthesizer:
 
 
 if __name__ == '__main__':
-    s = "This is the first sentence. <break time='2000ms'/> This is the second sentence. <break time='1s'/> This is the third sentence."
+    #s = "This is the first sentence. <break time='2000ms'/> This is the second sentence. <break time='5s'/> This is the third sentence."
     #s = "The state of CO has a lot of ski resorts."
     #s = "These materials are NSFW."
     #s = "The format is JPEG."
+    s = "I love all things food. Let me rephrase that, I love all things good food. I’m picky about what I like and I’d like to say I know great food. My favorite foods include all things Italian or Mexican, anything with chocolate, caramel, fresh fruit or browned butter. I don’t know how I’d live without the comfort food classics like pizza and enchiladas, all those indulgent dishes loaded with an abundance of gooey melted cheese. I’m a meat eater. Cookie dough is my weakness. The one food I think should be illegal is canned beets, they terrify me. Sugar is my addiction. I could live in the kitchen. I like to make food look pretty, because when it looks good doesn’t it just taste better?"
     #s = "This is just a sentence. I don't know how to answer this question. <break time='1s'/> This is the second sentence. The state of CO has a lot of ski resorts."
     #s = "CBS Sports has the latest NFL Football news."
     #s = "۷Chapter VI of the book is about the history of the United States. <break time='5s'/> The book is about the history of the United States."
-    s = "The city of hamedan is located in Iran."
+    #s = "The city of hamedan is located in Iran."
     #s = "The NASDAK told me to go away."
     #s = "this is <say-as interpret-as='acronym'>AMD </say-as> stands for Advanced Micro Devices. Also <say-as interpret-as='acronym'>XMR</say-as> is irrelevant. <break time='1s'/> This is the second sentence."
     #s = "The program <say-as interpret-as='acronym'>XWD</say-as> captures the content of a screen or of a window."
-    vs = VoiceSynthesizer(config_file="configs/ryan_config.json")
+    #s = "The program XWD captures the content of a screen or of a window."
+    vs = VoiceSynthesizer(config_file="configs/ryan_hq_voice_config.json")
     response = vs.tts(s)
     print(response)
